@@ -1,22 +1,27 @@
 import { createWrapper, mount, MountOptions, shallowMount, Wrapper } from '@vue/test-utils'
-import { VueConstructor } from 'vue'
-import { Vue } from 'vue/types/vue'
+import { QSelect } from 'quasar/dist/types/index'
+import Vue, { VueConstructor } from 'vue'
+import { Vue as VueType } from 'vue/types/vue'
 import ChaiExpect = Chai.ExpectStatic
 
-export function eMount<V extends Vue>(component: VueConstructor<V>, options?: MountOptions<V>): IEWrapper<V> {
+export function eMount<V extends VueType>(component: VueConstructor<V>, options?: MountOptions<V>): IEWrapper<V> {
   return extendWrapper(mount(component, options))
 }
 
-export function eShallow<V extends Vue>(component: VueConstructor<V>, options?: MountOptions<V>): IEWrapper<V> {
+export function eShallow<V extends VueType>(component: VueConstructor<V>, options?: MountOptions<V>): IEWrapper<V> {
   return extendWrapper(shallowMount(component, options))
 }
 
-export function extendWrapper<V extends Vue>(wrapper: Wrapper<V>): IEWrapper<V> {
+export function extendWrapper<V extends VueType>(wrapper: Wrapper<V>): IEWrapper<V> {
   // @ts-ignore Ewrapper implements Wrapper through the proxy
   return new EWrapper(wrapper) as IEWrapper<V>
 }
 
-class EWrapper<V extends Vue> {
+interface IQSelect extends QSelect {
+  virtualScrollSliceRange: object
+}
+
+class EWrapper<V extends VueType> {
   private readonly wrapper: Wrapper<V>
 
   constructor(wrapper: Wrapper<V>) {
@@ -36,15 +41,15 @@ class EWrapper<V extends Vue> {
     })
   }
 
-  public getInput(name: string): Wrapper<Vue> {
+  public getInput(name: string): Wrapper<VueType> {
     return this.getByName(name)
   }
 
-  public getByName(name: string): Wrapper<Vue> {
+  public getByName(name: string): Wrapper<VueType> {
     return this.wrapper.find(`[name="${name}"], [data-name="${name}"]`)
   }
 
-  public getQInput(name: string): Wrapper<Vue> {
+  public getQInput(name: string): Wrapper<VueType> {
     const el = this.getByName(name).element
       .parentElement!.parentElement!.parentElement!.parentElement as HTMLElement
     if (!el || !el.classList.contains('q-input')) {
@@ -54,7 +59,7 @@ class EWrapper<V extends Vue> {
     return createWrapper(el.__vue__)
   }
 
-  public getQSelect(name: string): Wrapper<Vue> {
+  public getQSelect(name: string): Wrapper<VueType> {
     try {
       const el = this.getByName(name).element
         .parentElement!.parentElement!.parentElement!.parentElement as HTMLElement
@@ -70,7 +75,7 @@ class EWrapper<V extends Vue> {
 
   // tslint:disable-next-line:no-any
   public setInputValue(name: string, value: any): void {
-    const input: Wrapper<Vue> = this.getInput(name)
+    const input: Wrapper<VueType> = this.getInput(name)
     const el = input.element as HTMLInputElement
     el.value = value
     input.trigger('input')
@@ -85,6 +90,40 @@ class EWrapper<V extends Vue> {
     const input = this.getInput(name).element as HTMLInputElement
     return input.value
   }
+
+  // pass in a mounted wrapper from a qSelect or SelectWithFilter component
+  // returns a qMenu wrapper object
+  public getMenuFromBody =
+    async (wrapper: Wrapper<VueType>, autoCompleteFilterInput?: string): Promise<Wrapper<VueType>> => {
+      const qSelect: Wrapper<IQSelect> = wrapper.find({ name: 'QSelect' })
+      qSelect.vm.virtualScrollSliceRange = { from: 0, to: qSelect.vm.options!.length }
+      wrapper.find('.q-field__control').element.dispatchEvent(new CustomEvent('focusin'))
+
+      qSelect.vm.showPopup()
+      await wrapper.vm.$nextTick()
+
+      if (autoCompleteFilterInput) {
+        qSelect.vm.filter(autoCompleteFilterInput)
+        await wrapper.vm.$nextTick()
+      }
+
+      function getMenu(): HTMLCollectionOf<Element> {
+        return window.document.body.getElementsByClassName('q-menu')
+      }
+
+      if (getMenu()[0] === undefined) {
+        const notFound = new Vue({
+          computed: {
+            inner_html(): string { return `<div> q-menu was not found. check qusar version < /div>` }, // any raw html
+          },
+          template: `< div v - html='inner_html' > </div>`,
+        })
+        return createWrapper(notFound)
+      }
+
+      // @ts-ignore
+      return createWrapper(window.document.body.getElementsByClassName('q-menu')[0].__vue__)
+    }
 
   public getIntFromInput(name: string): number {
     const input = this.getInput(name).element as HTMLInputElement
@@ -103,7 +142,7 @@ class EWrapper<V extends Vue> {
 
   public getQSelectChipValues(name: string): string[] {
     return this.wrapper.findAll('div[name="' + name + '"] .q-chip__content')
-      .wrappers.map((wrp: Wrapper<Vue>): string => {
+      .wrappers.map((wrp: Wrapper<VueType>): string => {
         return wrp.text()
       })
   }
@@ -119,7 +158,7 @@ class EWrapper<V extends Vue> {
       .filter((v: string) => v !== '')
   }
 
-  public toggleCheckbox(name: string = ''): Wrapper<Vue> {
+  public toggleCheckbox(name: string = ''): Wrapper<VueType> {
     const qCheckBox = this.getByName(name)
     qCheckBox.find('.q-checkbox__native').trigger('click')
     return qCheckBox
@@ -158,7 +197,7 @@ class EWrapper<V extends Vue> {
   }
 }
 
-export type IEWrapper<V extends Vue> = InstanceType<typeof EWrapper> & Wrapper<V>
+export type IEWrapper<V extends VueType> = InstanceType<typeof EWrapper> & Wrapper<V>
 
 function flushPromisesTimeout(): Promise<void> {
   return new Promise((resolve: () => void): void => {

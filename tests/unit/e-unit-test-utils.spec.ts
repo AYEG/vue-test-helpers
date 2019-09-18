@@ -1,11 +1,12 @@
 import { createLocalVue } from '@vue/test-utils'
 import { expect } from 'chai'
+import { QSelect } from 'quasar'
 import { eMount, IEWrapper } from 'src/e-unit-test-utils'
-
 import { Vue } from 'vue-property-decorator'
 import EWrapperHelper from '../helpers/EWrapperHelper.vue'
 
 const localVue = createLocalVue()
+
 let wrapper: IEWrapper<Vue>
 describe('e-unit-test-utils', (): void => {
   beforeEach(() => {
@@ -14,6 +15,36 @@ describe('e-unit-test-utils', (): void => {
       localVue,
     })
   })
+
+  it('returns menu autofill options from a qselect components', async () => {
+    const testData = [{
+      label: 'Neo',
+      value: 'Neo',
+    },
+    {
+      label: 'Morph',
+      value: 'Morph',
+    },
+    {
+      label: 'Smith',
+      value: 'Smith',
+    }]
+
+    document.body.innerHTML = ''
+
+    const qSelectWrapper = eMount(QSelect, {
+      sync: false,
+      propsData: {
+        options: testData,
+        useInput: true,
+        value: '',
+      },
+      localVue,
+    })
+    const res = await wrapper.getMenuFromBody(qSelectWrapper)
+    expect(res.html()).does.contain('Morph')
+  })
+
   it('can get element by data-name', (): void => {
     expect(wrapper.getByName('my-data-name-element').text()).to.equal('data-name content')
   })
