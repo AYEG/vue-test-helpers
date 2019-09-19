@@ -114,7 +114,10 @@ class EWrapper<V extends VueType> {
       if (getMenu()[0] === undefined) {
         const notFound = new Vue({
           computed: {
-            inner_html(): string { return `<div> q-menu was not found. check qusar version < /div>` }, // any raw html
+            inner_html(): string {
+              return `<div> q-menu was not found.
+            Check which quasar version is running < /div>`
+            },
           },
           template: `< div v - html='inner_html' > </div>`,
         })

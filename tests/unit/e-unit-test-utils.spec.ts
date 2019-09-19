@@ -16,7 +16,7 @@ describe('e-unit-test-utils', (): void => {
     })
   })
 
-  it('returns menu autofill options from a qselect components', async () => {
+  it('returns all autofill menu options from a qselect components', async () => {
     const testData = [{
       label: 'Neo',
       value: 'Neo',
@@ -25,10 +25,7 @@ describe('e-unit-test-utils', (): void => {
       label: 'Morph',
       value: 'Morph',
     },
-    {
-      label: 'Smith',
-      value: 'Smith',
-    }]
+    ]
 
     document.body.innerHTML = ''
 
@@ -42,7 +39,7 @@ describe('e-unit-test-utils', (): void => {
       localVue,
     })
     const res = await wrapper.getMenuFromBody(qSelectWrapper)
-    expect(res.html()).does.contain('Morph')
+    expect(res.html()).does.contain('Morph', 'Neo')
   })
 
   it('can get element by data-name', (): void => {
