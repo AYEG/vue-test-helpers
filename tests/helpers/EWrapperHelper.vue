@@ -1,16 +1,8 @@
 <template>
   <div>
     <q-checkbox v-model="checked" data-name="my-checkbox" />
-    <uw-input
-      v-model="value"
-      v-validate="'required'"
-      name="my-input"
-    />
-    <q-select
-      v-model="selectValue"
-      :options="options"
-      name="my-select"
-    />
+    <uw-input v-model="value" v-validate="'required'" name="my-input" />
+    <q-select v-model="selectValue" :options="options" name="my-select" />
     <q-select
       v-model="multiSelectValue"
       :options="options"

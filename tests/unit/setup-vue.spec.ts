@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import sinon, { SinonSpy } from 'sinon'
-import { addQuasarToVue, mockVueI18n } from 'src/setup-vue'
+import { addQuasarToVue, mockVueI18n } from '../../src/setup-vue'
 
 export interface IFakeMockI18nOptions {
   Vue: { directive: SinonSpy }

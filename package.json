@@ -6,15 +6,14 @@
   "license": "MIT",
   "author": " ",
   "main": "dist/index.umd.min.js",
-  "typings": "lib/src/index.d.ts",
+  "typings": "types/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "scripts": {
-    "build": "yarn lint && yarn clean && yarn build:ts && yarn build:main",
-    "build:ts": "tsc -p . --declaration --emitDeclarationOnly --allowJs false --noImplicitAny false && rm -rf ./lib/tests",
+    "build": "yarn lint && yarn clean && yarn build:main",
     "build:main": "vue-cli-service build --target lib --name org/index src/index.ts && mv ./dist/org/index.umd.min.js ./dist/ && rm -rf ./dist/org && rm -rf ./dist/demo.html",
-    "clean": "rimraf ./dist && rimraf ./lib",
+    "clean": "rimraf ./dist && rimraf ./types",
     "release": "yarn git-clean-status &&  yarn build && yarn publish",
     "lint": "vue-cli-service lint --fix && laura-wert-cli tslint",
     "test:unit": "vue-cli-service test:unit --include tests/unit/setup.ts tests/unit/",
@@ -76,7 +75,7 @@
   "files": [
     "package.json",
     "dist/",
-    "lib/"
+    "types/"
   ],
   "browserslist": [
     "> 1%",

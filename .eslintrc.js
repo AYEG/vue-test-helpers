@@ -1,9 +1,6 @@
 module.exports = {
-  root: true,
-  env: {
-    node: true,
-  },
   'extends': [
+    '@vue/typescript',
     'plugin:vue/recommended',
     '@vue/standard',
     '@vue/typescript',
@@ -15,7 +12,6 @@ module.exports = {
     ecmaFeatures: {
       jsx: false,
     },
-    parser: '@typescript-eslint/parser',
   },
   'overrides': [{
     files: ['src/**/*.tsx', 'src/**/*.vsx'],
@@ -25,11 +21,14 @@ module.exports = {
       },
     },
   }],
+  root: true,
+  env: {
+    node: true,
+  },
   // add your custom rules here
   rules: {
     // allow async-await
     'generator-star-spacing': 'off',
-
     // allow paren-less arrow functions
     'arrow-parens': 0,
     'one-var': 0,
@@ -55,10 +54,16 @@ module.exports = {
       'named': 'never',
       'asyncArrow': 'always',
     }],
-    'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
+    'lines-between-class-members': ['error', 'always', {
+      exceptAfterSingleLine: true,
+    }],
     'padding-line-between-statements': [
       'error',
-      { 'blankLine': 'always', 'prev': 'block-like', 'next': '*' },
+      {
+        'blankLine': 'always',
+        'prev': 'block-like',
+        'next': '*',
+      },
     ],
     'no-unused-expressions': 0,
     'chai-friendly/no-unused-expressions': 2,

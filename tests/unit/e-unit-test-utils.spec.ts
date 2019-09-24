@@ -1,8 +1,8 @@
 import { createLocalVue } from '@vue/test-utils'
 import { expect } from 'chai'
 import { QSelect } from 'quasar'
-import { eMount, IEWrapper } from 'src/e-unit-test-utils'
 import { Vue } from 'vue-property-decorator'
+import { eMount, IEWrapper } from '../../src/e-unit-test-utils'
 import EWrapperHelper from '../helpers/EWrapperHelper.vue'
 
 const localVue = createLocalVue()
